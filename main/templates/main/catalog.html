@@ -1,0 +1,18 @@
+{% extends 'main/base.html' %}
+
+{% block title %}
+Index
+{% endblock %}
+
+{% block content %}
+    <h1>Catalog Page</h1>
+    <p>Here you will see all beer mats</p>
+
+    <ul>
+      {% for item in beermats %}
+        <li>{{ item.maker }} - {{ item.name }} - {{ item.country }}</li>
+      {% empty %}
+        <li>Нет данных</li>
+      {% endfor %}
+    </ul>
+{% endblock %}
