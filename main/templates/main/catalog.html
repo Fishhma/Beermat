@@ -10,7 +10,10 @@ Index
 
     <ul>
       {% for item in beermats %}
-        <li>{{ item.maker }} - {{ item.name }} - {{ item.country }}</li>
+        <li>
+            <img src="{{ item.photo_mat.url }}" alt="{{ item.name }}" style="max-width:200px;">
+            {{ item.maker }} - {{ item.name }} - {{ item.country }}
+        </li>
       {% empty %}
         <li>Нет данных</li>
       {% endfor %}
