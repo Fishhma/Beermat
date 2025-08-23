@@ -1,21 +1,64 @@
 {% extends 'main/base.html' %}
 
-{% block title %}
-Index
-{% endblock %}
+{% block title %}Catalog{% endblock %}
 
 {% block content %}
-    <h1>Catalog Page</h1>
-    <p>Here you will see all beer mats</p>
+<h1>Beermat Catalog</h1>
 
-    <ul>
-      {% for item in beermats %}
-        <li>
-            <img src="{{ item.photo_mat.url }}" alt="{{ item.name }}" style="max-width:200px;">
-            {{ item.maker }} - {{ item.name }} - {{ item.country }}
-        </li>
-      {% empty %}
-        <li>Нет данных</li>
-      {% endfor %}
-    </ul>
+    <!-- Фильтр -->
+    <form method="get" style="margin-bottom:20px; display:flex; gap:10px;">
+        <label>
+            Country:
+            <select name="country" onchange="this.form.submit()">
+                <option value="all">All</option>
+                {% for c in countries %}
+                    <option value="{{ c }}" {% if selected_country == c %}selected{% endif %}>{{ c }}</option>
+                {% endfor %}
+            </select>
+        </label>
+
+        <label>
+            Maker:
+            <select name="maker" onchange="this.form.submit()">
+                <option value="all">All</option>
+                {% for m in makers %}
+                    <option value="{{ m }}" {% if selected_maker == m %}selected{% endif %}>{{ m }}</option>
+                {% endfor %}
+            </select>
+        </label>
+    </form>
+
+    <!-- Каталог -->
+    <div style="max-width:900px; margin:0 auto;">
+        {% for item in beermats %}
+        <div style="display:flex; align-items:center; border-bottom:1px solid #ccc; padding:15px 0;">
+            <div style="flex:0 0 120px; margin-right:20px;">
+                <img src="{{ item.photo_mat.url }}" alt="{{ item.name }}" style="max-width:100%; border:1px solid #ddd; border-radius:6px;">
+            </div>
+            <div style="flex:1;">
+                <h3 style="margin:0; font-size:1.2em; color:#333;">
+                    {{ item.maker }} — "{{ item.name }}"
+                </h3>
+                <p style="margin:5px 0; color:#555;">
+                    Country: {{ item.country }}<br>
+                    Diameter: {{ item.diameter }} mm &nbsp;|&nbsp;
+                    Thickness: {{ item.thickness }} mm &nbsp;|&nbsp;
+                    Weight: {{ item.weight }} g
+                </p>
+
+               <!--
+
+               <p style="margin:5px 0; font-size:0.9em; color:#777;">
+                    Where: {{ item.where }}<br>
+                    When: {{ item.when|date:"Y-m-d" }}
+                </p>
+
+                -->
+            </div>
+
+        </div>
+        {% empty %}
+            <p>Нет данных</p>
+        {% endfor %}
+    </div>
 {% endblock %}
