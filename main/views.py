@@ -24,6 +24,10 @@ def about(request):
     return render(request, 'main/about.html')
 
 
+def add_mat(request):
+    return render(request, 'main/add_mat.html')
+
+
 def catalog(request):
     beermats = BeermatForm.objects.all()
 

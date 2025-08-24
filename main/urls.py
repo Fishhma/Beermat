@@ -9,7 +9,8 @@ urlpatterns = [
     path('catalog', views.catalog, name='catalog'),
     path('my collection', views.my_collection, name='my collection'),
     path('profile', views.profile, name='profile'),
-    path('about', views.about, name='about')
+    path('about', views.about, name='about'),
+    path('add_mat', views.add_mat, name='add_mat')
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
