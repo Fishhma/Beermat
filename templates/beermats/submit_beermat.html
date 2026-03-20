@@ -1,0 +1,70 @@
+{% extends 'beermats/base.html' %}
+
+{% block title %}Submit a Beermat – Beermat Collector{% endblock %}
+
+{% block content %}
+  <h1>Submit a Beermat</h1>
+  <p class="text-muted">Your submission will be reviewed by an admin before it appears in the catalog.</p>
+  <p class="text-muted">Please, use a good quality image.</p>
+
+  <form method="post" enctype="multipart/form-data" class="row g-3">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+
+    <div class="col-md-6">
+      <label class="form-label">Photo (front)</label>
+      {{ form.photo_front }}
+      {{ form.photo_front.errors }}
+    </div>
+    <div class="col-md-6">
+      <label class="form-label">Photo (back)</label>
+      {{ form.photo_back }}
+      {{ form.photo_back.errors }}
+    </div>
+
+    <div class="col-md-6">
+      <label class="form-label">Beermat name <span class="text-danger">*</span></label>
+      {{ form.name }}
+      {{ form.name.errors }}
+    </div>
+
+    <div class="col-md-6">
+      <label class="form-label">Beer <span class="text-danger">*</span></label>
+      {{ form.beer_name }}
+      {{ form.beer_name.errors }}
+    </div>
+
+    <div class="col-md-6">
+      <label class="form-label">Brewery <span class="text-danger">*</span></label>
+      {{ form.brewery }}
+      {{ form.brewery.errors }}
+    </div>
+
+    <div class="col-md-6">
+      <label class="form-label">Country <span class="text-danger">*</span></label>
+      {{ form.country }}
+      {{ form.country.errors }}
+    </div>
+
+    <div class="col-md-4">
+      <label class="form-label">Diameter (mm)</label>
+      {{ form.diameter_mm }}
+      {{ form.diameter_mm.errors }}
+    </div>
+    <div class="col-md-4">
+      <label class="form-label">Weight (g)</label>
+      {{ form.weight_g }}
+      {{ form.weight_g.errors }}
+    </div>
+    <div class="col-md-4">
+      <label class="form-label">Thickness (mm)</label>
+      {{ form.thickness_mm }}
+      {{ form.thickness_mm.errors }}
+    </div>
+
+    <div class="col-12">
+      <button type="submit" class="btn btn-primary">Submit for review</button>
+      <a href="{% url 'catalog' %}" class="btn btn-link">Cancel</a>
+    </div>
+  </form>
+{% endblock %}

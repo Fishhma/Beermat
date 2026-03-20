@@ -1,0 +1,13 @@
+{% extends 'beermats/base.html' %}
+
+{% block title %}Sign in – Beermat Collector{% endblock %}
+
+{% block content %}
+  <h1>Sign in</h1>
+  <form method="post" class="col-md-4">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Sign in</button>
+  </form>
+  <p class="mt-3">Don't have an account? <a href="{% url 'signup' %}">Sign up</a>.</p>
+{% endblock %}

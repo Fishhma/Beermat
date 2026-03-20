@@ -1,0 +1,83 @@
+{% extends 'beermats/base.html' %}
+
+{% block title %}Home – Beermat Collector{% endblock %}
+
+{% block content %}
+  <div class="p-4 bg-light rounded-3">
+    <h1>Welcome to Beermat Collector</h1>
+    <p class="lead">Browse our catalog and keep track of the beermats you own.</p>
+    {% if user.is_authenticated %}
+      <p>Go to your <a href="{% url 'my_collection' %}">collection</a> or <a href="{% url 'catalog' %}">browse catalog</a>.</p>
+    {% else %}
+      <p><a class="btn btn-primary" href="{% url 'login' %}">Sign in</a> or <a class="btn btn-outline-primary" href="{% url 'signup' %}">Sign up</a> to start building your collection.</p>
+    {% endif %}
+  </div>
+
+  <div class="mt-4">
+    <h2 class="mb-3">News</h2>
+    <div class="row">
+      {% if news_items %}
+        {% for item in news_items %}
+          <div class="col-12 mb-3">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title mb-1">{{ item.title }}</h5>
+                <p class="card-text mb-2">{{ item.body|linebreaks }}</p>
+                <p class="mb-0"><small class="text-muted">Published: {{ item.published_at|date:'F j, Y H:i' }}</small></p>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="col-12">
+          <div class="alert alert-info">No news yet. Check back later!</div>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="mt-4">
+    <h2 class="mb-3">New Beermats</h2>
+    <div class="row">
+      {% if recent_beermats %}
+        {% for coaster in recent_beermats %}
+          <div class="col-12 mb-3">
+            <div class="card">
+              <div class="row g-0 align-items-center">
+                <div class="col-auto p-3">
+                  <div class="d-flex gap-2">
+                    {% if coaster.photo_front_thumb %}
+                      <img src="{{ coaster.photo_front_thumb.url }}" class="beermat-photo" alt="{{ coaster.name }} back">
+                    {% elif coaster.photo_front %}
+                      <img src="{{ coaster.photo_front.url }}" class="beermat-photo" alt="{{ coaster.name }} back">
+                    {% endif %}
+                    {% if coaster.photo_back_thumb %}
+                      <img src="{{ coaster.photo_back_thumb.url }}" class="beermat-photo" alt="{{ coaster.name }} front">
+                    {% elif coaster.photo_back %}
+                      <img src="{{ coaster.photo_back.url }}" class="beermat-photo" alt="{{ coaster.name }} front">
+                    {% endif %}
+                  </div>
+                </div>
+                <div class="col">
+                  <div class="card-body py-3">
+                    <h5 class="card-title mb-1">{{ coaster.name }}</h5>
+                    <div class="d-flex flex-wrap gap-2 mb-2">
+                      <span class="badge bg-secondary">Beer: {{ coaster.beer_name|default:'Unknown' }}</span>
+                      <span class="badge bg-secondary">Country: {{ coaster.country|default:'Unknown' }}</span>
+                      <span class="badge bg-secondary">Brewery: {{ coaster.brewery|default:'Unknown' }}</span>
+                    </div>
+                    <p class="mb-1"><small class="text-muted">Added: {{ coaster.created_at|date:'F j, Y H:i' }}</small></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="col-12">
+          <div class="alert alert-info">No new beermats yet. Check back later!</div>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+{% endblock %}

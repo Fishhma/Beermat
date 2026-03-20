@@ -1,0 +1,8 @@
+{% extends 'beermats/base.html' %}
+
+{% block title %}Signed out – Beermat Collector{% endblock %}
+
+{% block content %}
+  <div class="alert alert-info">You have been signed out.</div>
+  <p><a href="{% url 'home' %}">Return home</a> or <a href="{% url 'login' %}">sign in</a> again.</p>
+{% endblock %}

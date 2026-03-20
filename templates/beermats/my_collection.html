@@ -1,0 +1,79 @@
+{% extends 'beermats/base.html' %}
+
+{% block title %}My Collection – Beermat Collector{% endblock %}
+
+{% block content %}
+  <h1>My Collection</h1>
+
+  <form method="get" class="row g-3 mb-4">
+    <div class="col-md-4">
+      <label class="form-label">Country</label>
+      <select name="country" class="form-select" onchange="this.form.submit()">
+        <option value="all" {% if selected_country == 'all' %}selected{% endif %}>All countries</option>
+        {% for country in countries %}
+          <option value="{{ country }}" {% if selected_country == country %}selected{% endif %}>{{ country }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-4">
+      <label class="form-label">Beer</label>
+      <select name="beer" class="form-select" onchange="this.form.submit()">
+        <option value="all" {% if selected_beer == 'all' %}selected{% endif %}>All beers</option>
+        {% for beer in beers %}
+          <option value="{{ beer }}" {% if selected_beer == beer %}selected{% endif %}>{{ beer }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-4">
+      <label class="form-label">Brewery</label>
+      <select name="brewery" class="form-select" onchange="this.form.submit()">
+        <option value="all" {% if selected_brewery == 'all' %}selected{% endif %}>All breweries</option>
+        {% for brewery in breweries %}
+          <option value="{{ brewery }}" {% if selected_brewery == brewery %}selected{% endif %}>{{ brewery }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </form>
+
+  {% if items %}
+    <div class="row">
+      {% for item in items %}
+        <div class="col-md-6 col-lg-4 mb-4">
+          <div class="card h-100">
+            <div class="d-flex gap-2 justify-content-center" style="padding: 0.75rem;">
+              {% if item.beermat.photo_front_thumb %}
+                <img src="{{ item.beermat.photo_front_thumb.url }}" class="beermat-photo rounded" alt="{{ item.beermat.name }} front">
+              {% elif item.beermat.photo_front %}
+                <img src="{{ item.beermat.photo_front.url }}" class="beermat-photo rounded" alt="{{ item.beermat.name }} front">
+              {% endif %}
+              {% if item.beermat.photo_back_thumb %}
+                <img src="{{ item.beermat.photo_back_thumb.url }}" class="beermat-photo rounded" alt="{{ item.beermat.name }} back">
+              {% elif item.beermat.photo_back %}
+                <img src="{{ item.beermat.photo_back.url }}" class="beermat-photo rounded" alt="{{ item.beermat.name }} back">
+              {% endif %}
+            </div>
+            <div class="card-body d-flex flex-column">
+              <h5 class="card-title">{{ item.beermat.name }}</h5>
+              <p class="card-text mb-1"><strong>Beer:</strong> {{ item.beermat.beer_name|default:'Unknown' }}</p>
+              <p class="card-text mb-1"><strong>Brewery:</strong> {{ item.beermat.brewery|default:'Unknown' }}</p>
+              <p class="card-text mb-1"><strong>Country:</strong> {{ item.beermat.country|default:'Unknown' }}</p>
+              {% if item.beermat.diameter_mm %}
+                <p class="card-text mb-1"><strong>Diameter:</strong> {{ item.beermat.diameter_mm }} mm</p>
+              {% endif %}
+              {% if item.beermat.weight_g %}
+                <p class="card-text mb-1"><strong>Weight:</strong> {{ item.beermat.weight_g }} g</p>
+              {% endif %}
+              {% if item.beermat.thickness_mm %}
+                <p class="card-text mb-1"><strong>Thickness:</strong> {{ item.beermat.thickness_mm }} mm</p>
+              {% endif %}
+              <p class="text-muted small mt-2">Added: {{ item.acquired_at|date:'F j, Y' }}</p>
+              <a href="{% url 'remove_from_collection' item.id %}" class="btn btn-danger mt-auto">Remove</a>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="alert alert-info">Your collection is empty. Browse the <a href="{% url 'catalog' %}">catalog</a> to add beermats.</div>
+  {% endif %}
+{% endblock %}
