@@ -40,9 +40,23 @@ class PasswordChangeDone(PasswordChangeDoneView):
 
 
 def home(request):
-    recent_beermats = Beermat.objects.filter(approved=True).order_by('-approved_at')[:5]
+    approved_beermats = Beermat.objects.filter(approved=True)
+    recent_beermats = approved_beermats.order_by('-approved_at')[:5]
     news_items = NewsItem.objects.filter(published=True).order_by('-published_at')[:5]
-    return render(request, 'beermats/home.html', {'recent_beermats': recent_beermats, 'news_items': news_items})
+    total_beermats = approved_beermats.count()
+    total_breweries = approved_beermats.filter(brewery__gt='').values('brewery').distinct().count()
+    total_countries = approved_beermats.filter(country__gt='').values('country').distinct().count()
+    return render(
+        request,
+        'beermats/home.html',
+        {
+            'recent_beermats': recent_beermats,
+            'news_items': news_items,
+            'total_beermats': total_beermats,
+            'total_breweries': total_breweries,
+            'total_countries': total_countries,
+        },
+    )
 
 
 def about(request):
@@ -97,6 +111,10 @@ def catalog(request):
     if selected_brewery and selected_brewery != 'all':
         beermats = beermats.filter(brewery=selected_brewery)
 
+    catalog_total_beermats = beermats.count()
+    catalog_total_breweries = beermats.filter(brewery__gt='').values('brewery').distinct().count()
+    catalog_total_countries = beermats.filter(country__gt='').values('country').distinct().count()
+
     return render(
         request,
         'beermats/catalog.html',
@@ -108,6 +126,9 @@ def catalog(request):
             'selected_country': selected_country,
             'selected_beer': selected_beer,
             'selected_brewery': selected_brewery,
+            'catalog_total_beermats': catalog_total_beermats,
+            'catalog_total_breweries': catalog_total_breweries,
+            'catalog_total_countries': catalog_total_countries,
         },
     )
 
@@ -142,6 +163,10 @@ def my_collection(request):
     if selected_brewery and selected_brewery != 'all':
         items = items.filter(beermat__brewery=selected_brewery)
 
+    collection_total_beermats = items.count()
+    collection_total_breweries = items.filter(beermat__brewery__gt='').values('beermat__brewery').distinct().count()
+    collection_total_countries = items.filter(beermat__country__gt='').values('beermat__country').distinct().count()
+
     countries = (
         CollectionItem.objects.filter(user=request.user)
         .filter(beermat__country__gt='')
@@ -175,6 +200,9 @@ def my_collection(request):
             'selected_country': selected_country,
             'selected_beer': selected_beer,
             'selected_brewery': selected_brewery,
+            'collection_total_beermats': collection_total_beermats,
+            'collection_total_breweries': collection_total_breweries,
+            'collection_total_countries': collection_total_countries,
         },
     )
 

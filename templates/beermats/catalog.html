@@ -42,6 +42,23 @@
     </div>
   </form>
 
+  <div class="mb-4 p-3 bg-white border rounded shadow-sm">
+    <div class="row text-center">
+      <div class="col-sm-4 mb-2 mb-sm-0">
+        <div class="fw-bold">Beermats</div>
+        <div>{{ catalog_total_beermats }}</div>
+      </div>
+      <div class="col-sm-4 mb-2 mb-sm-0">
+        <div class="fw-bold">Breweries</div>
+        <div>{{ catalog_total_breweries }}</div>
+      </div>
+      <div class="col-sm-4">
+        <div class="fw-bold">Countries</div>
+        <div>{{ catalog_total_countries }}</div>
+      </div>
+    </div>
+  </div>
+
   {% if beermats %}
     <div class="row">
       {% for beermat in beermats %}
