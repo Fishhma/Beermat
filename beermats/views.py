@@ -64,40 +64,54 @@ def about(request):
 
 
 def catalog(request):
-    beermats = Beermat.objects.filter(approved=True)
+    base_beermats = Beermat.objects.filter(approved=True)
     selected_beer = request.GET.get('beer', 'all')
     selected_brewery = request.GET.get('brewery', 'all')
-
     selected_country = request.GET.get('country', 'all')
 
     if request.user.is_authenticated:
-        beermats = beermats.annotate(
+        beermats = base_beermats.annotate(
             user_collection_id=Subquery(
                 CollectionItem.objects.filter(user=request.user, beermat=OuterRef('pk'))
                 .values('id')[:1]
             )
         )
     else:
-        beermats = beermats.annotate(user_collection_id=Value(None, output_field=IntegerField()))
+        beermats = base_beermats.annotate(user_collection_id=Value(None, output_field=IntegerField()))
 
+    countries = base_beermats
+    if selected_beer and selected_beer != 'all':
+        countries = countries.filter(beer_name=selected_beer)
+    if selected_brewery and selected_brewery != 'all':
+        countries = countries.filter(brewery=selected_brewery)
     countries = (
-        beermats
+        countries
         .filter(country__gt='')
         .order_by('country')
         .values_list('country', flat=True)
         .distinct()
     )
 
+    beers = base_beermats
+    if selected_country and selected_country != 'all':
+        beers = beers.filter(country=selected_country)
+    if selected_brewery and selected_brewery != 'all':
+        beers = beers.filter(brewery=selected_brewery)
     beers = (
-        beermats
+        beers
         .filter(beer_name__gt='')
         .order_by('beer_name')
         .values_list('beer_name', flat=True)
         .distinct()
     )
 
+    breweries = base_beermats
+    if selected_country and selected_country != 'all':
+        breweries = breweries.filter(country=selected_country)
+    if selected_beer and selected_beer != 'all':
+        breweries = breweries.filter(beer_name=selected_beer)
     breweries = (
-        beermats
+        breweries
         .filter(brewery__gt='')
         .order_by('brewery')
         .values_list('brewery', flat=True)
@@ -150,12 +164,13 @@ def submit_beermat(request):
 
 @login_required
 def my_collection(request):
-    items = CollectionItem.objects.filter(user=request.user).select_related('beermat')
+    base_items = CollectionItem.objects.filter(user=request.user).select_related('beermat')
 
     selected_country = request.GET.get('country', 'all')
     selected_beer = request.GET.get('beer', 'all')
     selected_brewery = request.GET.get('brewery', 'all')
 
+    items = base_items
     if selected_country and selected_country != 'all':
         items = items.filter(beermat__country=selected_country)
     if selected_beer and selected_beer != 'all':
@@ -167,26 +182,41 @@ def my_collection(request):
     collection_total_breweries = items.filter(beermat__brewery__gt='').values('beermat__brewery').distinct().count()
     collection_total_countries = items.filter(beermat__country__gt='').values('beermat__country').distinct().count()
 
+    countries = base_items
+    if selected_beer and selected_beer != 'all':
+        countries = countries.filter(beermat__beer_name=selected_beer)
+    if selected_brewery and selected_brewery != 'all':
+        countries = countries.filter(beermat__brewery=selected_brewery)
     countries = (
-        CollectionItem.objects.filter(user=request.user)
+        countries
         .filter(beermat__country__gt='')
+        .order_by('beermat__country')
         .values_list('beermat__country', flat=True)
         .distinct()
-        .order_by('beermat__country')
     )
+    beers = base_items
+    if selected_country and selected_country != 'all':
+        beers = beers.filter(beermat__country=selected_country)
+    if selected_brewery and selected_brewery != 'all':
+        beers = beers.filter(beermat__brewery=selected_brewery)
     beers = (
-        CollectionItem.objects.filter(user=request.user)
+        beers
         .filter(beermat__beer_name__gt='')
+        .order_by('beermat__beer_name')
         .values_list('beermat__beer_name', flat=True)
         .distinct()
-        .order_by('beermat__beer_name')
     )
+    breweries = base_items
+    if selected_country and selected_country != 'all':
+        breweries = breweries.filter(beermat__country=selected_country)
+    if selected_beer and selected_beer != 'all':
+        breweries = breweries.filter(beermat__beer_name=selected_beer)
     breweries = (
-        CollectionItem.objects.filter(user=request.user)
+        breweries
         .filter(beermat__brewery__gt='')
+        .order_by('beermat__brewery')
         .values_list('beermat__brewery', flat=True)
         .distinct()
-        .order_by('beermat__brewery')
     )
 
     return render(
