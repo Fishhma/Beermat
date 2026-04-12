@@ -74,7 +74,11 @@
                 <p class="card-text mb-1"><strong>Thickness:</strong> {{ beermat.thickness_mm }} mm</p>
               {% endif %}
               {% if user.is_authenticated %}
-                <a href="{% url 'add_to_collection' beermat.id %}?next={% url 'catalog' %}" class="btn btn-outline-primary mt-auto">Add to collection</a>
+                {% if beermat.user_collection_id %}
+                  <a href="{% url 'remove_from_collection' beermat.user_collection_id %}?next={% url 'catalog' %}" class="btn btn-danger mt-auto">Remove from collection</a>
+                {% else %}
+                  <a href="{% url 'add_to_collection' beermat.id %}?next={% url 'catalog' %}" class="btn btn-outline-primary mt-auto">Add to collection</a>
+                {% endif %}
               {% else %}
                 <a href="{% url 'login' %}?next={% url 'catalog' %}" class="btn btn-outline-primary mt-auto">Sign in to collect</a>
               {% endif %}

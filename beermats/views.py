@@ -7,6 +7,7 @@ from django.contrib.auth.views import (
     PasswordChangeView,
     PasswordChangeDoneView,
 )
+from django.db.models import IntegerField, OuterRef, Subquery, Value
 from django.shortcuts import get_object_or_404, redirect, render, resolve_url
 
 from .forms import BeermatSubmissionForm, ProfileForm, UserUpdateForm
@@ -55,6 +56,16 @@ def catalog(request):
 
     selected_country = request.GET.get('country', 'all')
 
+    if request.user.is_authenticated:
+        beermats = beermats.annotate(
+            user_collection_id=Subquery(
+                CollectionItem.objects.filter(user=request.user, beermat=OuterRef('pk'))
+                .values('id')[:1]
+            )
+        )
+    else:
+        beermats = beermats.annotate(user_collection_id=Value(None, output_field=IntegerField()))
+
     countries = (
         beermats
         .filter(country__gt='')
@@ -64,25 +75,25 @@ def catalog(request):
     )
 
     beers = (
-        CollectionItem.objects.all()
-        .filter(beermat__beer_name__gt='')
-        .values_list('beermat__beer_name', flat=True)
+        beermats
+        .filter(beer_name__gt='')
+        .order_by('beer_name')
+        .values_list('beer_name', flat=True)
         .distinct()
-        .order_by('beermat__beer_name')
     )
 
     breweries = (
-        CollectionItem.objects.all()
-        .filter(beermat__brewery__gt='')
-        .values_list('beermat__brewery', flat=True)
+        beermats
+        .filter(brewery__gt='')
+        .order_by('brewery')
+        .values_list('brewery', flat=True)
         .distinct()
-        .order_by('beermat__brewery')
     )
     
     if selected_country and selected_country != 'all':
         beermats = beermats.filter(country=selected_country)
     if selected_beer and selected_beer != 'all':
-        beermats = beermats.filter(beer=selected_beer)
+        beermats = beermats.filter(beer_name=selected_beer)
     if selected_brewery and selected_brewery != 'all':
         beermats = beermats.filter(brewery=selected_brewery)
 
