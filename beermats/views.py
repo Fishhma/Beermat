@@ -128,8 +128,9 @@ def catalog(request):
         beermats = beermats.filter(brewery=selected_brewery)
 
     catalog_total_beermats = beermats.count()
-    catalog_total_breweries = beermats.filter(brewery__gt='').values('brewery').distinct().count()
     catalog_total_countries = beermats.filter(country__gt='').values('country').distinct().count()
+    catalog_total_brands = beermats.filter(beer_name__gt='').values('beer_name').distinct().count()
+    catalog_total_breweries = beermats.filter(brewery__gt='').values('brewery').distinct().count()
 
     return render(
         request,
@@ -143,8 +144,9 @@ def catalog(request):
             'selected_beer': selected_beer,
             'selected_brewery': selected_brewery,
             'catalog_total_beermats': catalog_total_beermats,
-            'catalog_total_breweries': catalog_total_breweries,
             'catalog_total_countries': catalog_total_countries,
+            'catalog_total_brands': catalog_total_brands,
+            'catalog_total_breweries': catalog_total_breweries,
         },
     )
 
@@ -181,8 +183,9 @@ def my_collection(request):
         items = items.filter(beermat__brewery=selected_brewery)
 
     collection_total_beermats = items.count()
-    collection_total_breweries = items.filter(beermat__brewery__gt='').values('beermat__brewery').distinct().count()
     collection_total_countries = items.filter(beermat__country__gt='').values('beermat__country').distinct().count()
+    collection_total_brands = items.filter(beermat__beer_name__gt='').values('beermat__beer_name').distinct().count()
+    collection_total_breweries = items.filter(beermat__brewery__gt='').values('beermat__brewery').distinct().count()
 
     countries = base_items
     if selected_beer and selected_beer != 'all':
@@ -233,10 +236,32 @@ def my_collection(request):
             'selected_beer': selected_beer,
             'selected_brewery': selected_brewery,
             'collection_total_beermats': collection_total_beermats,
-            'collection_total_breweries': collection_total_breweries,
             'collection_total_countries': collection_total_countries,
+            'collection_total_brands': collection_total_brands,
+            'collection_total_breweries': collection_total_breweries,
         },
     )
+
+
+def _get_collection_stats(request):
+    selected_country = request.GET.get('country', 'all')
+    selected_beer = request.GET.get('beer', 'all')
+    selected_brewery = request.GET.get('brewery', 'all')
+
+    items = CollectionItem.objects.filter(user=request.user)
+    if selected_country and selected_country != 'all':
+        items = items.filter(beermat__country=selected_country)
+    if selected_beer and selected_beer != 'all':
+        items = items.filter(beermat__beer_name=selected_beer)
+    if selected_brewery and selected_brewery != 'all':
+        items = items.filter(beermat__brewery=selected_brewery)
+
+    return {
+        'collection_total_beermats': items.count(),
+        'collection_total_countries': items.filter(beermat__country__gt='').values('beermat__country').distinct().count(),
+        'collection_total_brands': items.filter(beermat__beer_name__gt='').values('beermat__beer_name').distinct().count(),
+        'collection_total_breweries': items.filter(beermat__brewery__gt='').values('beermat__brewery').distinct().count(),
+    }
 
 
 @login_required
@@ -286,16 +311,16 @@ def add_to_collection(request, beermat_id):
     item, created = CollectionItem.objects.get_or_create(user=request.user, beermat=beermat)
 
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-        return JsonResponse(
-            {
-                'success': True,
-                'action': 'added',
-                'collection_item_id': item.id,
-                'beermat_id': beermat.id,
-                'remove_url': reverse('remove_from_collection', args=[item.id]),
-                'add_url': reverse('add_to_collection', args=[beermat.id]),
-            }
-        )
+        response_data = {
+            'success': True,
+            'action': 'added',
+            'collection_item_id': item.id,
+            'beermat_id': beermat.id,
+            'remove_url': reverse('remove_from_collection', args=[item.id]),
+            'add_url': reverse('add_to_collection', args=[beermat.id]),
+        }
+        response_data.update(_get_collection_stats(request))
+        return JsonResponse(response_data)
 
     next_url = request.GET.get('next') or request.META.get('HTTP_REFERER') or 'catalog'
     return redirect(next_url)
@@ -308,15 +333,15 @@ def remove_from_collection(request, item_id):
     item.delete()
 
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-        return JsonResponse(
-            {
-                'success': True,
-                'action': 'removed',
-                'collection_item_id': item_id,
-                'beermat_id': beermat_id,
-                'add_url': reverse('add_to_collection', args=[beermat_id]),
-            }
-        )
+        response_data = {
+            'success': True,
+            'action': 'removed',
+            'collection_item_id': item_id,
+            'beermat_id': beermat_id,
+            'add_url': reverse('add_to_collection', args=[beermat_id]),
+        }
+        response_data.update(_get_collection_stats(request))
+        return JsonResponse(response_data)
 
     next_url = request.GET.get('next') or request.META.get('HTTP_REFERER') or 'my_collection'
     return redirect(next_url)

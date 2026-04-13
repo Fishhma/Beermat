@@ -37,17 +37,21 @@
 
   <div class="mb-4 p-3 bg-white border rounded shadow-sm">
     <div class="row text-center">
-      <div class="col-sm-4 mb-2 mb-sm-0">
+      <div class="col-sm-3 mb-2 mb-sm-0">
         <div class="fw-bold">Beermats</div>
         <div class="collection-count-beermats">{{ collection_total_beermats }}</div>
       </div>
-      <div class="col-sm-4 mb-2 mb-sm-0">
-        <div class="fw-bold">Breweries</div>
-        <div>{{ collection_total_breweries }}</div>
-      </div>
-      <div class="col-sm-4">
+      <div class="col-sm-3 mb-2 mb-sm-0">
         <div class="fw-bold">Countries</div>
-        <div>{{ collection_total_countries }}</div>
+        <div class="collection-count-countries">{{ collection_total_countries }}</div>
+      </div>
+      <div class="col-sm-3 mb-2 mb-sm-0">
+        <div class="fw-bold">Brands</div>
+        <div class="collection-count-brands">{{ collection_total_brands }}</div>
+      </div>
+      <div class="col-sm-3">
+        <div class="fw-bold">Breweries</div>
+        <div class="collection-count-breweries">{{ collection_total_breweries }}</div>
       </div>
     </div>
   </div>
@@ -84,7 +88,7 @@
                 <p class="card-text mb-1"><strong>Thickness:</strong> {{ item.beermat.thickness_mm }} mm</p>
               {% endif %}
               <p class="text-muted small mt-2">Added: {{ item.acquired_at|date:'F j, Y' }}</p>
-              <a href="{% url 'remove_from_collection' item.id %}"
+              <a href="{% url 'remove_from_collection' item.id %}?country={{ selected_country|urlencode }}&beer={{ selected_beer|urlencode }}&brewery={{ selected_brewery|urlencode }}"
                  data-collection-action="remove"
                  data-page="my_collection"
                  data-item-id="{{ item.id }}"
