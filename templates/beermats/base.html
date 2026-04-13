@@ -23,6 +23,13 @@
         height: auto;
         object-fit: cover;
       }
+
+      .extra-details {
+        display: none;
+      }
+      .extra-details.show {
+        display: block;
+      }
     </style>
 </head>
 <body>
@@ -156,6 +163,23 @@
             console.error('Collection action error:', error);
             window.location.href = url;
           });
+      });
+
+      document.addEventListener('click', function (event) {
+        const toggleButton = event.target.closest('.btn-toggle-details');
+        if (!toggleButton) {
+          return;
+        }
+
+        const targetId = toggleButton.dataset.targetId;
+        const details = targetId ? document.getElementById(targetId) : null;
+        if (!details) {
+          return;
+        }
+
+        const visible = details.classList.toggle('show');
+        details.hidden = !visible;
+        toggleButton.textContent = visible ? 'Hide Details' : 'Show Details';
       });
     </script>
 </body>

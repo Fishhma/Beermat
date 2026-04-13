@@ -85,14 +85,27 @@
               <p class="card-text mb-1"><strong>Beer:</strong> {{ beermat.beer_name|default:'Unknown' }}</p>
               <p class="card-text mb-1"><strong>Brewery:</strong> {{ beermat.brewery|default:'Unknown' }}</p>
               <p class="card-text mb-1"><strong>Country:</strong> {{ beermat.country|default:'Unknown' }}</p>
-              {% if beermat.diameter_mm %}
-                <p class="card-text mb-1"><strong>Diameter:</strong> {{ beermat.diameter_mm }} mm</p>
-              {% endif %}
-              {% if beermat.weight_g %}
-                <p class="card-text mb-1"><strong>Weight:</strong> {{ beermat.weight_g }} g</p>
-              {% endif %}
-              {% if beermat.thickness_mm %}
-                <p class="card-text mb-1"><strong>Thickness:</strong> {{ beermat.thickness_mm }} mm</p>
+              {% if beermat.diameter_mm or beermat.weight_g or beermat.thickness_mm or beermat.description or beermat.approved_at %}
+                <button type="button" class="btn btn-sm btn-outline-secondary btn-toggle-details mt-1 mb-2" data-target-id="extra-{{ beermat.id }}">
+                  Show Details
+                </button>
+                <div class="extra-details text-muted small" id="extra-{{ beermat.id }}" hidden>
+                  {% if beermat.diameter_mm %}
+                    <p class="mb-1"><strong>Diameter:</strong> {{ beermat.diameter_mm }} mm</p>
+                  {% endif %}
+                  {% if beermat.weight_g %}
+                    <p class="mb-1"><strong>Weight:</strong> {{ beermat.weight_g }} g</p>
+                  {% endif %}
+                  {% if beermat.thickness_mm %}
+                    <p class="mb-1"><strong>Thickness:</strong> {{ beermat.thickness_mm }} mm</p>
+                  {% endif %}
+                  {% if beermat.description %}
+                    <p class="mb-1">{{ beermat.description|linebreaksbr }}</p>
+                  {% endif %}
+                  {% if beermat.approved_at %}
+                    <p class="mb-1"><strong>Appeared:</strong> {{ beermat.approved_at|date:'F j, Y' }}</p>
+                  {% endif %}
+                </div>
               {% endif %}
               {% if user.is_authenticated %}
                 {% if beermat.user_collection_id %}

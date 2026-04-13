@@ -78,16 +78,29 @@
               <p class="card-text mb-1"><strong>Beer:</strong> {{ item.beermat.beer_name|default:'Unknown' }}</p>
               <p class="card-text mb-1"><strong>Brewery:</strong> {{ item.beermat.brewery|default:'Unknown' }}</p>
               <p class="card-text mb-1"><strong>Country:</strong> {{ item.beermat.country|default:'Unknown' }}</p>
-              {% if item.beermat.diameter_mm %}
-                <p class="card-text mb-1"><strong>Diameter:</strong> {{ item.beermat.diameter_mm }} mm</p>
+              <p class="text-muted small mb-2">Added: {{ item.acquired_at|date:'F j, Y' }}</p>
+              {% if item.beermat.diameter_mm or item.beermat.weight_g or item.beermat.thickness_mm or item.beermat.description or item.beermat.approved_at %}
+                <button type="button" class="btn btn-sm btn-outline-secondary btn-toggle-details mt-1 mb-2" data-target-id="extra-{{ item.id }}">
+                  Show Details
+                </button>
+                <div class="extra-details text-muted small" id="extra-{{ item.id }}" hidden>
+                  {% if item.beermat.diameter_mm %}
+                    <p class="mb-1"><strong>Diameter:</strong> {{ item.beermat.diameter_mm }} mm</p>
+                  {% endif %}
+                  {% if item.beermat.weight_g %}
+                    <p class="mb-1"><strong>Weight:</strong> {{ item.beermat.weight_g }} g</p>
+                  {% endif %}
+                  {% if item.beermat.thickness_mm %}
+                    <p class="mb-1"><strong>Thickness:</strong> {{ item.beermat.thickness_mm }} mm</p>
+                  {% endif %}
+                  {% if item.beermat.description %}
+                    <p class="mb-1">{{ item.beermat.description|linebreaksbr }}</p>
+                  {% endif %}
+                  {% if item.beermat.approved_at %}
+                    <p class="mb-1"><strong>Appeared:</strong> {{ item.beermat.approved_at|date:'F j, Y' }}</p>
+                  {% endif %}
+                </div>
               {% endif %}
-              {% if item.beermat.weight_g %}
-                <p class="card-text mb-1"><strong>Weight:</strong> {{ item.beermat.weight_g }} g</p>
-              {% endif %}
-              {% if item.beermat.thickness_mm %}
-                <p class="card-text mb-1"><strong>Thickness:</strong> {{ item.beermat.thickness_mm }} mm</p>
-              {% endif %}
-              <p class="text-muted small mt-2">Added: {{ item.acquired_at|date:'F j, Y' }}</p>
               <a href="{% url 'remove_from_collection' item.id %}?country={{ selected_country|urlencode }}&beer={{ selected_beer|urlencode }}&brewery={{ selected_brewery|urlencode }}"
                  data-collection-action="remove"
                  data-page="my_collection"
