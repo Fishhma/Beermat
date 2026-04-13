@@ -33,3 +33,6 @@ staticfiles/
 
 # Other
 *.swp
+media/
+static/
+postgres_data/

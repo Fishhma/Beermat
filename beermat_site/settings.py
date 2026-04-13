@@ -23,9 +23,24 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-yfr32-(dt4b-7!tz79w0h42)ed_dq^dk_ts$1b9y1&9@p73&j4'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+# Доверяем proxy заголовки
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# Обязательно, если CSRF проверяет HTTPS
+CSRF_TRUSTED_ORIGINS = [
+    "https://beermat.duckdns.org",
+    "https://80.211.195.143",  # на всякий случай
+]
+
+ALLOWED_HOSTS = [
+	"beermat.duckdns.org",
+	"10.66.66.3",
+	"localhost",
+	"80.211.195.143",
+	"127.0.0.1",
+]
 
 
 # Application definition
@@ -128,11 +143,13 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / "staticfiles"
+STATIC_ROOT = "/app/static"
 
 # Media files (uploads)
+BASE_DIR = Path(__file__).resolve().parent.parent
+
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_ROOT = "/app/media"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
