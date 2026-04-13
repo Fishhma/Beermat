@@ -48,6 +48,7 @@ def home(request):
     total_beermats = approved_beermats.count()
     total_breweries = approved_beermats.filter(brewery__gt='').values('brewery').distinct().count()
     total_countries = approved_beermats.filter(country__gt='').values('country').distinct().count()
+    total_brands = approved_beermats.filter(beer_name__gt='').values('beer_name').distinct().count()
     return render(
         request,
         'beermats/home.html',
@@ -57,6 +58,7 @@ def home(request):
             'total_beermats': total_beermats,
             'total_breweries': total_breweries,
             'total_countries': total_countries,
+            'total_brands': total_brands,
         },
     )
 
