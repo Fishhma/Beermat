@@ -92,9 +92,21 @@
               {% endif %}
               {% if user.is_authenticated %}
                 {% if beermat.user_collection_id %}
-                  <a href="{% url 'remove_from_collection' beermat.user_collection_id %}?next={% url 'catalog' %}" class="btn btn-danger mt-auto">Remove from collection</a>
+                  <a href="{% url 'remove_from_collection' beermat.user_collection_id %}?next={% url 'catalog' %}"
+                     data-collection-action="remove"
+                     data-page="catalog"
+                     data-item-id="{{ beermat.user_collection_id }}"
+                     class="btn btn-danger mt-auto">
+                    Remove from collection
+                  </a>
                 {% else %}
-                  <a href="{% url 'add_to_collection' beermat.id %}?next={% url 'catalog' %}" class="btn btn-outline-primary mt-auto">Add to collection</a>
+                  <a href="{% url 'add_to_collection' beermat.id %}?next={% url 'catalog' %}"
+                     data-collection-action="add"
+                     data-page="catalog"
+                     data-beermat-id="{{ beermat.id }}"
+                     class="btn btn-outline-primary mt-auto">
+                    Add to collection
+                  </a>
                 {% endif %}
               {% else %}
                 <a href="{% url 'login' %}?next={% url 'catalog' %}" class="btn btn-outline-primary mt-auto">Sign in to collect</a>

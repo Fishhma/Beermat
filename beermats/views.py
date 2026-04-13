@@ -8,7 +8,9 @@ from django.contrib.auth.views import (
     PasswordChangeDoneView,
 )
 from django.db.models import IntegerField, OuterRef, Subquery, Value
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render, resolve_url
+from django.urls import reverse
 
 from .forms import BeermatSubmissionForm, ProfileForm, UserUpdateForm
 from .models import Beermat, CollectionItem, NewsItem
@@ -281,7 +283,20 @@ def signup(request):
 @login_required
 def add_to_collection(request, beermat_id):
     beermat = get_object_or_404(Beermat, pk=beermat_id)
-    CollectionItem.objects.get_or_create(user=request.user, beermat=beermat)
+    item, created = CollectionItem.objects.get_or_create(user=request.user, beermat=beermat)
+
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        return JsonResponse(
+            {
+                'success': True,
+                'action': 'added',
+                'collection_item_id': item.id,
+                'beermat_id': beermat.id,
+                'remove_url': reverse('remove_from_collection', args=[item.id]),
+                'add_url': reverse('add_to_collection', args=[beermat.id]),
+            }
+        )
+
     next_url = request.GET.get('next') or request.META.get('HTTP_REFERER') or 'catalog'
     return redirect(next_url)
 
@@ -289,5 +304,19 @@ def add_to_collection(request, beermat_id):
 @login_required
 def remove_from_collection(request, item_id):
     item = get_object_or_404(CollectionItem, pk=item_id, user=request.user)
+    beermat_id = item.beermat_id
     item.delete()
-    return redirect('my_collection')
+
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        return JsonResponse(
+            {
+                'success': True,
+                'action': 'removed',
+                'collection_item_id': item_id,
+                'beermat_id': beermat_id,
+                'add_url': reverse('add_to_collection', args=[beermat_id]),
+            }
+        )
+
+    next_url = request.GET.get('next') or request.META.get('HTTP_REFERER') or 'my_collection'
+    return redirect(next_url)

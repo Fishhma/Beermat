@@ -39,7 +39,7 @@
     <div class="row text-center">
       <div class="col-sm-4 mb-2 mb-sm-0">
         <div class="fw-bold">Beermats</div>
-        <div>{{ collection_total_beermats }}</div>
+        <div class="collection-count-beermats">{{ collection_total_beermats }}</div>
       </div>
       <div class="col-sm-4 mb-2 mb-sm-0">
         <div class="fw-bold">Breweries</div>
@@ -84,7 +84,13 @@
                 <p class="card-text mb-1"><strong>Thickness:</strong> {{ item.beermat.thickness_mm }} mm</p>
               {% endif %}
               <p class="text-muted small mt-2">Added: {{ item.acquired_at|date:'F j, Y' }}</p>
-              <a href="{% url 'remove_from_collection' item.id %}" class="btn btn-danger mt-auto">Remove</a>
+              <a href="{% url 'remove_from_collection' item.id %}"
+                 data-collection-action="remove"
+                 data-page="my_collection"
+                 data-item-id="{{ item.id }}"
+                 class="btn btn-danger mt-auto">
+                Remove
+              </a>
             </div>
           </div>
         </div>
